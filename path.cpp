@@ -15,38 +15,30 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
 #include "path.h"
 
-#include <QMainWindow>
-#include <QVector>
+#include <QDebug>
+
+void Path::addPoint(QPoint point) {
+    this->points.append(point);
+}
+
+void Path::draw(QPainter* painter) {
+    QPainterPath qpath = this->toQPainterPath();
+    painter->drawPath(qpath);
+}
 
 
-QT_BEGIN_NAMESPACE
-namespace Ui { class MainWindow; }
-QT_END_NAMESPACE
+QPainterPath Path::toQPainterPath() {
+    QPainterPath result(points.at(0));
+    qDebug() << "Testing" << points.at(0);
+    for (QPoint p : this->points) {
+        result.lineTo(p);
+    }
 
-class MainWindow : public QMainWindow
-{
-    Q_OBJECT
+    return result;
+}
 
-public:
-    MainWindow(QWidget *parent = nullptr);
-    ~MainWindow();
-
-protected:
-    void mouseMoveEvent(QMouseEvent *event);
-    void mousePressEvent(QMouseEvent *event);
-    void mouseReleaseEvent(QMouseEvent *event);
-    void paintEvent(QPaintEvent *event);
-    void resizeEvent(QResizeEvent *event);
-    void wheelEvent(QWheelEvent *event);
-
-private:
-    Ui::MainWindow *ui;
-    Path* currentPath;
-    QVector<Drawable*> drawables;
-
-};
-#endif // MAINWINDOW_H
+bool Path::isEmpty() {
+    return this->points.isEmpty();
+}

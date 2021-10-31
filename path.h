@@ -15,38 +15,28 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
-#include "path.h"
+#ifndef PATH_H
+#define PATH_H
 
-#include <QMainWindow>
+#include "drawable.h"
+
 #include <QVector>
+#include <QPair>
+#include <QPoint>
+#include <QPainterPath>
+#include <QPainter>
 
-
-QT_BEGIN_NAMESPACE
-namespace Ui { class MainWindow; }
-QT_END_NAMESPACE
-
-class MainWindow : public QMainWindow
+class Path : public Drawable
 {
-    Q_OBJECT
-
 public:
-    MainWindow(QWidget *parent = nullptr);
-    ~MainWindow();
-
-protected:
-    void mouseMoveEvent(QMouseEvent *event);
-    void mousePressEvent(QMouseEvent *event);
-    void mouseReleaseEvent(QMouseEvent *event);
-    void paintEvent(QPaintEvent *event);
-    void resizeEvent(QResizeEvent *event);
-    void wheelEvent(QWheelEvent *event);
-
+    Path() {}
+    ~Path() {}
+    void addPoint(QPoint);
+    void draw(QPainter*);
+    bool isEmpty();
 private:
-    Ui::MainWindow *ui;
-    Path* currentPath;
-    QVector<Drawable*> drawables;
-
+    QVector<QPoint> points;
+    QPainterPath toQPainterPath();
 };
-#endif // MAINWINDOW_H
+
+#endif // PATH_H
