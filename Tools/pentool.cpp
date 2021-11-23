@@ -15,30 +15,27 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-#include "path.h"
 
-#include <QDebug>
+#include "pentool.h"
 
-void Path::addPoint(QPoint point) {
-    this->points.append(point);
+PenTool::PenTool(MainWindow* window)
+{
+    this->window = window;
 }
 
-void Path::draw(QPainter* painter) {
-    QPainterPath qpath = this->toQPainterPath();
-    painter->drawPath(qpath);
+void PenTool::mouseMoveEvent(QPoint position)
+{
+    this->currentPath->addPoint(position);
+    this->window->repaint();
 }
 
-
-QPainterPath Path::toQPainterPath() {
-    QPainterPath result(points.at(0));
-    qDebug() << "Testing" << points.at(0);
-    for (QPoint p : this->points) {
-        result.lineTo(p);
-    }
-
-    return result;
+void PenTool::mousePressEvent(QPoint position)
+{
+    this->currentPath = new Path();
+    this->currentPath->addPoint(position);
+    window->addDrawable(this->currentPath);
 }
 
-bool Path::isEmpty() {
-    return this->points.isEmpty();
+void PenTool::mouseReleaseEvent(QPoint position)
+{
 }

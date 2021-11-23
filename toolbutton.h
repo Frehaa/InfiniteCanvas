@@ -15,48 +15,31 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
+#ifndef TOOLBUTTON_H
+#define TOOLBUTTON_H
 
-#include "Drawables/path.h"
-#include "Tools/tool.h"
-
-#include <QMainWindow>
-#include <QVector>
-#include <QTransform>
+#include <QKeyEvent>
+#include <QMouseEvent>
+#include <QPushButton>
+#include <QFocusEvent>
+#include <QEnterEvent>
 #include <QEvent>
 
-QT_BEGIN_NAMESPACE
-namespace Ui { class MainWindow; }
-QT_END_NAMESPACE
-
-class MainWindow : public QMainWindow
+class ToolButton : public QPushButton
 {
-    Q_OBJECT
-
 public:
-    MainWindow(QWidget *parent = nullptr);
-    void addDrawable(Drawable*);
-    void setActiveTool(Tool*);
-    ~MainWindow();
+    ToolButton();
 
 protected:
-    void mouseMoveEvent(QMouseEvent *event);
     void mousePressEvent(QMouseEvent *event);
     void mouseReleaseEvent(QMouseEvent *event);
-    void paintEvent(QPaintEvent *event);
-    void resizeEvent(QResizeEvent *event);
-    void wheelEvent(QWheelEvent *event);
-    void keyPressEvent(QKeyEvent*);
-    void keyReleaseEvent(QKeyEvent*);
-
-private:
-    Ui::MainWindow *ui;
-    Drawable* background;
-    QVector<Drawable*> drawables;
-    QTransform transform;
-    QPoint lastMousePosition;
-    QPen currentPen;
-    Tool* activeTool;
+    void keyPressEvent(QKeyEvent *event);
+    void keyReleaseEvent(QKeyEvent *event);
+    void focusInEvent(QFocusEvent *event);
+    void focusOutEvent(QFocusEvent *event);
+    void enterEvent(QEnterEvent *event);
+    void leaveEvent(QEvent *event);
+    virtual void activate() = 0;
 };
-#endif // MAINWINDOW_H
+
+#endif // TOOLBUTTON_H

@@ -16,8 +16,14 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 #include "mainwindow.h"
+#include "pentoolbutton.h"
+#include "circletoolbutton.h"
 
 #include <QApplication>
+#include <QPushButton>
+#include <QBoxLayout>
+#include <QSlider>
+#include <QColorDialog>
 
 /*
 QTranslator translator;
@@ -31,10 +37,38 @@ for (const QString &locale : uiLanguages) {
 }
 */
 
+#include <QPushButton>
+#include <QObject>
+
+void test() {
+    QColorDialog colorDialog(Qt::black, nullptr);
+    colorDialog.show();
+}
+
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
+
     MainWindow window;
+    QWidget toolbox;
+    QWidget toolOptionWindow;
+
+    QLayout *layout = new QBoxLayout(QBoxLayout::Direction::LeftToRight, &toolbox);
+    layout->setAlignment(Qt::AlignLeft | Qt::AlignTop);
+
+    PenToolButton penButton = PenToolButton(&window);
+    layout->addWidget(&penButton);
+    CircleToolButton circleButton = CircleToolButton(&window);
+    layout->addWidget(&circleButton);
+
+    QPushButton b = QPushButton(&toolOptionWindow);
+
+    QSlider slider(Qt::Orientation::Horizontal, &toolOptionWindow);
+
+
     window.show();
+    toolbox.show();
+    toolOptionWindow.show();
     return a.exec();
 }
+

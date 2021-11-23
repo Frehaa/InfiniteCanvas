@@ -1,4 +1,5 @@
-QT       += core gui
+QT       += core gui \
+    quick
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -9,14 +10,35 @@ CONFIG += c++11
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    Drawables/circle.cpp \
+    Drawables/drawableconfig.cpp \
+    Drawables/path.cpp \
+    Tools/circletool.cpp \
+    Tools/pentool.cpp \
+    circletoolbutton.cpp \
+    colorbackground.cpp \
+    gridlines.cpp \
     main.cpp \
     mainwindow.cpp \
-    path.cpp
+    pentoolbutton.cpp \
+    rulelines.cpp \
+    toolbutton.cpp
 
 HEADERS += \
-    drawable.h \
+    Drawables/circle.h \
+    Drawables/drawable.h \
+    Drawables/drawableconfig.h \
+    Drawables/path.h \
+    Tools/circletool.h \
+    Tools/pentool.h \
+    Tools/tool.h \
+    circletoolbutton.h \
+    colorbackground.h \
+    gridlines.h \
     mainwindow.h \
-    path.h
+    pentoolbutton.h \
+    rulelines.h \
+    toolbutton.h
 
 FORMS += \
     mainwindow.ui

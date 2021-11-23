@@ -23,8 +23,14 @@
 #include "QResizeEvent"
 #include "QRect"
 #include "QBrush"
+#include <QTransform>
 
-#include "path.h"
+#include "Drawables/path.h"
+#include "Tools/circletool.h"
+#include "rulelines.h"
+#include "gridlines.h"
+#include "colorbackground.h"
+#include "Tools/pentool.h"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -32,7 +38,23 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
     setMouseTracking(true);
-    this->currentPath = new Path();
+    // this->background = new ColorBackground(this, Qt::white);
+    this->background = new GridLines(this);
+    // this->background = new RuleLines(this);
+    this->transform = QTransform();
+    // this->activeTool = new PenTool(this);
+    this->activeTool = new CircleTool(this);
+}
+
+void MainWindow::addDrawable(Drawable *drawable)
+{
+    this->drawables.append(drawable);
+    this->repaint();
+}
+
+void MainWindow::setActiveTool(Tool *tool)
+{
+    this->activeTool = tool;
 }
 
 MainWindow::~MainWindow()
@@ -41,55 +63,88 @@ MainWindow::~MainWindow()
 }
 
 void MainWindow::mouseMoveEvent(QMouseEvent *event) {
-    if (event->buttons().testFlag(Qt::LeftButton)) {
-        qDebug() << "Move to " << event->pos() << " flags: " << event->flags();
-        this->currentPath->addPoint(event->pos());
+    auto buttons = event->buttons();
+    auto pos = event->pos();
+    pos.setX(pos.x() - transform.dx());
+    pos.setY(pos.y() - transform.dy());
+    if (buttons.testFlag(Qt::LeftButton)) {
+        this->activeTool->mouseMoveEvent(pos);
+    } else if (buttons.testFlag(Qt::MiddleButton)) {
+        auto diff = lastMousePosition - event->pos();
+        lastMousePosition = event->pos();
+        // qDebug() << lastMousePosition << " diff: " << diff << " flags: " << event->flags();
+        transform.translate(diff.x(), diff.y());
         this->repaint();
-    }
+   }
+
 }
 
 void MainWindow::mousePressEvent(QMouseEvent *event) {
-    if (event->button() == Qt::LeftButton) {
-        qDebug() << "Press - " << event->pos() << " flags: " << event->flags();
-        this->currentPath->addPoint(event->pos());
-        this->repaint();
+    auto button = event->button();
+    auto pos = event->pos();
+    pos.setX(pos.x() - transform.dx());
+    pos.setY(pos.y() - transform.dy());
+
+    if (button == Qt::LeftButton) {
+        this->activeTool->mousePressEvent(pos);
+    } else if (button == Qt::MiddleButton) {
+        this->lastMousePosition = event->pos();
     }
+
+    // } else if (button == Qt::RightButton) {
+        // auto circle = new Circle(pos, 100.0);
+        // this->drawables.append(circle);
+        // this->repaint();
+    // }
 }
 
 void MainWindow::mouseReleaseEvent(QMouseEvent *event) {
-    if (event->button() == Qt::LeftButton) {
-        qDebug() << "Release - " << event->pos() << " flags: " << event->flags();
-        this->currentPath->addPoint(event->pos());
-        this->drawables.append(this->currentPath);
-        this->currentPath = new Path();
-        this->repaint();
+     auto button = event->button();
+    auto pos = event->pos();
+    pos.setX(pos.x() - transform.dx());
+    pos.setY(pos.y() - transform.dy());
+
+    if (button == Qt::LeftButton) {
+        this->activeTool->mouseReleaseEvent(pos);
     }
 }
 
 void MainWindow::paintEvent(QPaintEvent *event) {
-    qDebug() << "paint " << event->rect();
-
     QPainter painter(this);
-
     painter.setRenderHint(QPainter::Antialiasing);
-    painter.setPen(QPen(Qt::blue, 12, Qt::SolidLine, Qt::RoundCap));
+
+    painter.setTransform(this->transform);
+    this->background->draw(&painter);
 
     for (auto d : this->drawables) {
         d->draw(&painter);
     }
 
-    if (this->currentPath->isEmpty() == false) {
-        qDebug() << this->currentPath->isEmpty();
-        this->currentPath->draw(&painter);
-    }
-
+    // this->activeTool->draw(&painter);
 }
 
 void MainWindow::resizeEvent(QResizeEvent *event) {
-    qDebug() << "resize - old size:" << event->oldSize() << " New size: " << event->size();
+    // qDebug() << "resize - old size:" << event->oldSize() << " New size: " << event->size();
 
 }
 
 void MainWindow::wheelEvent(QWheelEvent *event) {
-    qDebug() << "Wheel - angleDelta:" << event->angleDelta() << " nverted: " << event->inverted() << " phase: " << event->phase() << " pixelDelta: " << event->pixelDelta();
+    qreal scaleValue = event->angleDelta().y()/1200.0;
+    // qDebug() << "Wheel - angleDelta:" << event->angleDelta() << " nverted: " << event->inverted() << " phase: " << event->phase() << " pixelDelta: " << event->pixelDelta();
+    // qDebug() << "scaleValue: " << scaleValue;
+    transform.scale(1 + scaleValue, 1 + scaleValue);
+    this->repaint();
+}
+
+void MainWindow::keyPressEvent(QKeyEvent *event)
+{
+    qDebug() << "Key: " << event->key() << " - isAutoRepeat: " << event->isAutoRepeat();
+    if (event->key() == Qt::Key_B) {
+        qDebug() << "B pressed";
+    }
+}
+
+void MainWindow::keyReleaseEvent(QKeyEvent *event)
+{
+    // qDebug() << "Key: " << event->key() << " - isAutoRepeat: " << event->isAutoRepeat();
 }
