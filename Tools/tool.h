@@ -19,6 +19,7 @@
 #define TOOL_H
 
 #include <QPaintEvent>
+#include <QString>
 
 class Tool
 {
@@ -26,7 +27,7 @@ public:
     virtual void mouseMoveEvent(QPoint) = 0;
     virtual void mousePressEvent(QPoint) = 0;
     virtual void mouseReleaseEvent(QPoint) = 0;
-    // virtual void draw(QPainter *painter) = 0;
+    virtual QString getName() = 0;
 };
 
 #endif // TOOL_H

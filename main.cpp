@@ -16,12 +16,14 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 #include "mainwindow.h"
-#include "pentoolbutton.h"
-#include "circletoolbutton.h"
+#include "Tools/pentool.h"
+#include "Tools/circletool.h"
+#include "Tools/linetool.h"
 
 #include <QApplication>
 #include <QPushButton>
 #include <QBoxLayout>
+#include <QLayout>
 #include <QSlider>
 #include <QColorDialog>
 
@@ -38,37 +40,95 @@ for (const QString &locale : uiLanguages) {
 */
 
 #include <QPushButton>
+
 #include <QObject>
+#include <QMenuBar>
+#include <QMenu>
 
 void test() {
     QColorDialog colorDialog(Qt::black, nullptr);
-    colorDialog.show();
+    QColor color;
+    if (colorDialog.exec() == QColorDialog::Accepted) {
+        color = colorDialog.currentColor();
+    }
+    qDebug() << color;
+}
+
+void addButton(MainWindow &window, QBoxLayout &layout, Tool* tool) {
+    QPushButton button;
+    button.setFixedSize(40, 40);
+    button.setText(tool->getName());
+    button.connect(&button, &QPushButton::clicked, &layout, [&]() {
+        window.setActiveTool(tool);
+    });
+    layout.addWidget(&button);
 }
 
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
 
+
     MainWindow window;
-    QWidget toolbox;
-    QWidget toolOptionWindow;
+    // window.menuBar()->hide();
+    // QMenuBar menubar(&window);
+    // QMenu fileMenu("File", &menubar);
 
-    QLayout *layout = new QBoxLayout(QBoxLayout::Direction::LeftToRight, &toolbox);
-    layout->setAlignment(Qt::AlignLeft | Qt::AlignTop);
+    window.setContextMenuPolicy(Qt::CustomContextMenu);
 
-    PenToolButton penButton = PenToolButton(&window);
-    layout->addWidget(&penButton);
-    CircleToolButton circleButton = CircleToolButton(&window);
-    layout->addWidget(&circleButton);
+    QWidget toolbox(&window);
 
-    QPushButton b = QPushButton(&toolOptionWindow);
+    toolbox.setWindowTitle("Toolbox");
+    toolbox.setWindowFlags(Qt::Tool);
+    toolbox.setMinimumSize(QSize(100,100));
 
+
+    QBoxLayout toolboxLayout = QBoxLayout(QBoxLayout::Direction::LeftToRight, &toolbox);
+    toolboxLayout.setAlignment(Qt::AlignLeft | Qt::AlignTop);
+    toolboxLayout.setDirection(QBoxLayout::LeftToRight);
+
+    PenTool penTool(window);
+    CircleTool circleTool(window);
+    LineTool lineTool(window);
+    addButton(window, toolboxLayout, &penTool);
+    addButton(window, toolboxLayout, &circleTool);
+    addButton(window, toolboxLayout, &lineTool);
+
+    QWidget toolOptionWindow(&window);
+    toolOptionWindow.setWindowTitle("Tool Options");
+    toolOptionWindow.setWindowFlags(Qt::Tool);
+
+    QBoxLayout toolOptionLayout = QBoxLayout(QBoxLayout::Direction::TopToBottom, &toolOptionWindow);
+    toolOptionLayout.setAlignment(Qt::AlignLeft | Qt::AlignTop);
     QSlider slider(Qt::Orientation::Horizontal, &toolOptionWindow);
+    slider.setTickInterval(1);
+    slider.setTickPosition(QSlider::TickPosition::NoTicks);
+    slider.connect(&slider, &QSlider::valueChanged, &toolOptionWindow, [&]() {
+        qDebug() << slider.value();
+    });
+    toolOptionLayout.addWidget(&slider);
+    QPushButton b = QPushButton(&toolOptionWindow);
+    b.setMinimumHeight(20);
+    QColor buttonColor(0, 0, 0);
 
+    b.setStyleSheet("QPushButton { background-color:" + QVariant(buttonColor).toString() + "; border: none; }");
+    toolOptionLayout.addWidget(&b);
+
+    b.connect(&b, &QAbstractButton::clicked, &toolOptionWindow, [&]() {
+        QColorDialog colorDialog(buttonColor, nullptr);
+        if (colorDialog.exec() == QColorDialog::Accepted) {
+            buttonColor = colorDialog.currentColor();
+        }
+        b.setStyleSheet("QPushButton { background-color:" + QVariant(buttonColor).toString() + "; border: none; }");
+     });
 
     window.show();
     toolbox.show();
     toolOptionWindow.show();
+
+    toolbox.move(window.pos() - QPoint(toolbox.width() + 50, 0));
+    toolOptionWindow.move(window.pos() + QPoint(window.width() + 50, 0));
+
     return a.exec();
 }
 

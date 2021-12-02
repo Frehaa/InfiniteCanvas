@@ -32,6 +32,7 @@ public:
     Path() {}
     ~Path() {}
     void addPoint(QPoint);
+    void popPoint();
     void draw(QPainter*);
     bool isEmpty();
 private:

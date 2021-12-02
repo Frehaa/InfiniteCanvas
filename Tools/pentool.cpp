@@ -18,24 +18,21 @@
 
 #include "pentool.h"
 
-PenTool::PenTool(MainWindow* window)
-{
-    this->window = window;
-}
-
 void PenTool::mouseMoveEvent(QPoint position)
 {
-    this->currentPath->addPoint(position);
-    this->window->repaint();
+    currentPath->addPoint(position);
+    window.repaint();
 }
 
 void PenTool::mousePressEvent(QPoint position)
 {
-    this->currentPath = new Path();
-    this->currentPath->addPoint(position);
-    window->addDrawable(this->currentPath);
+    currentPath = new Path();
+    currentPath->addPoint(position);
+    window.addDrawable(currentPath);
 }
 
-void PenTool::mouseReleaseEvent(QPoint position)
+QString PenTool::getName()
 {
+    return QString("Pen");
+
 }

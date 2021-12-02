@@ -19,24 +19,12 @@
 #include "circletool.h"
 #include "Drawables/circle.h"
 
-CircleTool::CircleTool(MainWindow *window)
-{
-    this->window = window;
-    this->circle = nullptr;
-}
-
-void CircleTool::mouseMoveEvent(QPoint)
-{
-
-}
-
 void CircleTool::mousePressEvent(QPoint position)
 {
-    this->circle = new Circle(position, 30);
-    this->window->addDrawable(circle);
+    window.addDrawable(new Circle(position, 30));
 }
 
-void CircleTool::mouseReleaseEvent(QPoint)
+QString CircleTool::getName()
 {
-
+    return QString("Circle");
 }

@@ -15,18 +15,28 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-#include "pentoolbutton.h"
+#ifndef LINETOOL_H
+#define LINETOOL_H
 
-PenToolButton::PenToolButton(MainWindow* window)
+#include "tool.h"
+#include "Drawables/path.h"
+#include "mainwindow.h"
+
+class LineTool : public Tool
 {
-    this->window = window;
-    this->tool = new PenTool(this->window);
-    this->setText("Pen Tool");
-}
+public:
+    LineTool(MainWindow &w) : window(w){}
+    void mouseMoveEvent(QPoint);
+    void mousePressEvent(QPoint);
+    void mouseReleaseEvent(QPoint) {}
+    QString getName();
 
-void PenToolButton::activate()
-{
-    this->window->setActiveTool(tool);
-}
+private:
+    MainWindow& window;
+    Path *path;
 
+    // Tool interface
+public:
+};
 
+#endif // LINETOOL_H

@@ -43,7 +43,8 @@ MainWindow::MainWindow(QWidget *parent)
     // this->background = new RuleLines(this);
     this->transform = QTransform();
     // this->activeTool = new PenTool(this);
-    this->activeTool = new CircleTool(this);
+    this->activeTool = new CircleTool(*this);
+    this->zoomLevel = 5;
 }
 
 void MainWindow::addDrawable(Drawable *drawable)
@@ -64,9 +65,8 @@ MainWindow::~MainWindow()
 
 void MainWindow::mouseMoveEvent(QMouseEvent *event) {
     auto buttons = event->buttons();
-    auto pos = event->pos();
-    pos.setX(pos.x() - transform.dx());
-    pos.setY(pos.y() - transform.dy());
+    auto pos = transform.inverted().map(event->pos());
+
     if (buttons.testFlag(Qt::LeftButton)) {
         this->activeTool->mouseMoveEvent(pos);
     } else if (buttons.testFlag(Qt::MiddleButton)) {
@@ -81,35 +81,28 @@ void MainWindow::mouseMoveEvent(QMouseEvent *event) {
 
 void MainWindow::mousePressEvent(QMouseEvent *event) {
     auto button = event->button();
-    auto pos = event->pos();
-    pos.setX(pos.x() - transform.dx());
-    pos.setY(pos.y() - transform.dy());
+    auto pos = transform.inverted().map(event->pos());
+
+    qDebug() << event->pos() << pos;
 
     if (button == Qt::LeftButton) {
         this->activeTool->mousePressEvent(pos);
     } else if (button == Qt::MiddleButton) {
         this->lastMousePosition = event->pos();
     }
-
-    // } else if (button == Qt::RightButton) {
-        // auto circle = new Circle(pos, 100.0);
-        // this->drawables.append(circle);
-        // this->repaint();
-    // }
 }
 
 void MainWindow::mouseReleaseEvent(QMouseEvent *event) {
      auto button = event->button();
-    auto pos = event->pos();
-    pos.setX(pos.x() - transform.dx());
-    pos.setY(pos.y() - transform.dy());
+
+    auto pos = transform.inverted().map(event->pos());
 
     if (button == Qt::LeftButton) {
         this->activeTool->mouseReleaseEvent(pos);
     }
 }
 
-void MainWindow::paintEvent(QPaintEvent *event) {
+void MainWindow::paintEvent(QPaintEvent*) {
     QPainter painter(this);
     painter.setRenderHint(QPainter::Antialiasing);
 
@@ -123,16 +116,25 @@ void MainWindow::paintEvent(QPaintEvent *event) {
     // this->activeTool->draw(&painter);
 }
 
-void MainWindow::resizeEvent(QResizeEvent *event) {
+void MainWindow::resizeEvent(QResizeEvent*) {
     // qDebug() << "resize - old size:" << event->oldSize() << " New size: " << event->size();
-
 }
 
 void MainWindow::wheelEvent(QWheelEvent *event) {
-    qreal scaleValue = event->angleDelta().y()/1200.0;
-    // qDebug() << "Wheel - angleDelta:" << event->angleDelta() << " nverted: " << event->inverted() << " phase: " << event->phase() << " pixelDelta: " << event->pixelDelta();
-    // qDebug() << "scaleValue: " << scaleValue;
-    transform.scale(1 + scaleValue, 1 + scaleValue);
+    qDebug() << event->position();
+    float scaleValue[11] = {0.2, 0.4, 0.6, 0.8, 0.9, 1, 1.1, 1.2, 1.4, 1.7, 2};
+    if (event->angleDelta().y() > 0 && zoomLevel < 10) {
+        zoomLevel += 1;
+    } else if (event->angleDelta().y() < 0 && zoomLevel > 0) {
+        zoomLevel -= 1;
+    }
+    auto pos = transform.inverted().map(event->position());
+
+    transform.translate(pos.x(), pos.y());
+    transform.setMatrix(scaleValue[zoomLevel],0, 0, 0, scaleValue[zoomLevel], 0, transform.dx(), transform.dy(), 1);
+    transform.translate(-pos.x(), -pos.y());
+    qDebug() << zoomLevel << " " << scaleValue[zoomLevel] << " " << transform << event->globalPosition();
+
     this->repaint();
 }
 
@@ -144,7 +146,18 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
     }
 }
 
-void MainWindow::keyReleaseEvent(QKeyEvent *event)
+void MainWindow::keyReleaseEvent(QKeyEvent*)
 {
     // qDebug() << "Key: " << event->key() << " - isAutoRepeat: " << event->isAutoRepeat();
+}
+
+void MainWindow::on_actionSave_triggered()
+{
+    qDebug() << "Save";
+}
+
+
+void MainWindow::on_actionOpen_triggered()
+{
+    qDebug() << "Open";
 }

@@ -32,6 +32,11 @@ void Path::addPoint(QPoint point) {
     this->points.append(point);
 }
 
+void Path::popPoint()
+{
+    this->points.pop_back();
+}
+
 void Path::draw(QPainter* painter) {
     if (isEmpty()) return;
 

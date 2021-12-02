@@ -15,25 +15,25 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+#include "linetool.h"
 
-#ifndef CIRCLETOOLBUTTON_H
-#define CIRCLETOOLBUTTON_H
-
-#include "toolbutton.h"
-#include "Tools/circletool.h"
-#include "mainwindow.h"
-
-class CircleToolButton : public ToolButton
+void LineTool::mouseMoveEvent(QPoint point)
 {
-public:
-    CircleToolButton(MainWindow*);
+    path->popPoint();
+    path->addPoint(point);
+    window.repaint();
+}
 
-protected:
-    void activate();
+void LineTool::mousePressEvent(QPoint point)
+{
+    path = new Path();
+    path->addPoint(point);
+    path->addPoint(point);
+    window.addDrawable(path);
+}
 
-private:
-    MainWindow *window;
-    CircleTool *tool;
-};
+QString LineTool::getName()
+{
+   return QString("Line");
+}
 
-#endif // CIRCLETOOLBUTTON_H

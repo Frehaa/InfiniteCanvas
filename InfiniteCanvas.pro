@@ -14,15 +14,13 @@ SOURCES += \
     Drawables/drawableconfig.cpp \
     Drawables/path.cpp \
     Tools/circletool.cpp \
+    Tools/linetool.cpp \
     Tools/pentool.cpp \
-    circletoolbutton.cpp \
     colorbackground.cpp \
     gridlines.cpp \
     main.cpp \
     mainwindow.cpp \
-    pentoolbutton.cpp \
-    rulelines.cpp \
-    toolbutton.cpp
+    rulelines.cpp
 
 HEADERS += \
     Drawables/circle.h \
@@ -30,15 +28,13 @@ HEADERS += \
     Drawables/drawableconfig.h \
     Drawables/path.h \
     Tools/circletool.h \
+    Tools/linetool.h \
     Tools/pentool.h \
     Tools/tool.h \
-    circletoolbutton.h \
     colorbackground.h \
     gridlines.h \
     mainwindow.h \
-    pentoolbutton.h \
-    rulelines.h \
-    toolbutton.h
+    rulelines.h
 
 FORMS += \
     mainwindow.ui

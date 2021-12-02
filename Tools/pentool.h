@@ -23,20 +23,18 @@
 #include "mainwindow.h"
 #include "Drawables/path.h"
 
-#include <QPainterPath>
-
 class PenTool : public Tool
 {
 public:
-    PenTool(MainWindow*);
+    PenTool(MainWindow &w) : window(w){}
     void mouseMoveEvent(QPoint);
     void mousePressEvent(QPoint);
-    void mouseReleaseEvent(QPoint);
-    // void draw(QPainter*);
+    void mouseReleaseEvent(QPoint) {};
+    QString getName();
 
 private:
     Path *currentPath;
-    MainWindow *window;
+    MainWindow &window;
 };
 
 #endif // PENTOOL_H

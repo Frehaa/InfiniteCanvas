@@ -25,15 +25,14 @@
 class CircleTool : public Tool
 {
 public:
-    CircleTool(MainWindow*);
-    void mouseMoveEvent(QPoint);
+    CircleTool(MainWindow &w): window(w){}
+    void mouseMoveEvent(QPoint){}
     void mousePressEvent(QPoint);
-    void mouseReleaseEvent(QPoint);
-    // void draw(QPainter *painter);
+    void mouseReleaseEvent(QPoint){}
+    QString getName();
+
 private:
-    MainWindow *window;
-    Drawable *circle;
-    QPoint position;
+    MainWindow &window;
 };
 
 #endif // CIRCLETOOL_H
