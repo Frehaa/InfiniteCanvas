@@ -16,12 +16,9 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #include "rulelines.h"
 
-
-
 RuleLines::RuleLines(QWidget *parent)
 {
     this->parent = parent;
-
 }
 
 void RuleLines::draw(QPainter *painter)

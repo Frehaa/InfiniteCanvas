@@ -26,11 +26,10 @@
 class PenTool : public Tool
 {
 public:
-    PenTool(MainWindow &w) : window(w){}
+    PenTool(MainWindow &w) : Tool("Pen"), window(w){}
     void mouseMoveEvent(QPoint);
     void mousePressEvent(QPoint);
     void mouseReleaseEvent(QPoint) {};
-    QString getName();
 
 private:
     Path *currentPath;

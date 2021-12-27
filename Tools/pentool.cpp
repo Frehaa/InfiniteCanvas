@@ -30,9 +30,3 @@ void PenTool::mousePressEvent(QPoint position)
     currentPath->addPoint(position);
     window.addDrawable(currentPath);
 }
-
-QString PenTool::getName()
-{
-    return QString("Pen");
-
-}

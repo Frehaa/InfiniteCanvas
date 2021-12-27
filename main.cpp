@@ -44,6 +44,9 @@ for (const QString &locale : uiLanguages) {
 #include <QObject>
 #include <QMenuBar>
 #include <QMenu>
+#include <QMetaMethod>
+
+#include <functional>
 
 void test() {
     QColorDialog colorDialog(Qt::black, nullptr);
@@ -54,15 +57,15 @@ void test() {
     qDebug() << color;
 }
 
-void addButton(MainWindow &window, QBoxLayout &layout, Tool* tool) {
-    QPushButton button;
-    button.setFixedSize(40, 40);
-    button.setText(tool->getName());
-    button.connect(&button, &QPushButton::clicked, &layout, [&]() {
-        window.setActiveTool(tool);
-    });
-    layout.addWidget(&button);
+void addButton(MainWindow &window, QBoxLayout &layout, std::shared_ptr<Tool>& tool, const std::function <void ()>& onClick) {
+    QPushButton *button = new QPushButton(&window);
+    button->setFixedSize(40, 40);
+    button->setText(tool->getName());
+    button->connect(button, &QPushButton::clicked, &layout, onClick);
+    layout.addWidget(button);
 }
+
+#include <memory>
 
 int main(int argc, char *argv[])
 {
@@ -87,12 +90,17 @@ int main(int argc, char *argv[])
     toolboxLayout.setAlignment(Qt::AlignLeft | Qt::AlignTop);
     toolboxLayout.setDirection(QBoxLayout::LeftToRight);
 
-    PenTool penTool(window);
-    CircleTool circleTool(window);
-    LineTool lineTool(window);
-    addButton(window, toolboxLayout, &penTool);
-    addButton(window, toolboxLayout, &circleTool);
-    addButton(window, toolboxLayout, &lineTool);
+    std::shared_ptr<Tool> tools[3];
+    // Tool* tools[3];
+    tools[0] = std::shared_ptr<Tool>(new PenTool(window));
+    tools[1] = std::shared_ptr<Tool>(new CircleTool(window));
+    tools[2] = std::shared_ptr<Tool>(new LineTool(window));
+
+    for (int i = 0; i < 3; ++i) {
+        addButton(window, toolboxLayout, tools[i], [&window, &tools, i]() -> void {
+            window.setActiveTool(tools[i]);
+        });
+    }
 
     QWidget toolOptionWindow(&window);
     toolOptionWindow.setWindowTitle("Tool Options");

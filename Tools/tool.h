@@ -24,10 +24,14 @@
 class Tool
 {
 public:
+    Tool(QString toolName) : name(toolName) {}
     virtual void mouseMoveEvent(QPoint) = 0;
     virtual void mousePressEvent(QPoint) = 0;
     virtual void mouseReleaseEvent(QPoint) = 0;
-    virtual QString getName() = 0;
+    virtual QString getName() { return name; }
+
+private:
+    QString name;
 };
 
 #endif // TOOL_H

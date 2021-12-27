@@ -25,11 +25,10 @@
 class CircleTool : public Tool
 {
 public:
-    CircleTool(MainWindow &w): window(w){}
+    CircleTool(MainWindow &w): Tool("Circle"), window(w){}
     void mouseMoveEvent(QPoint){}
     void mousePressEvent(QPoint);
     void mouseReleaseEvent(QPoint){}
-    QString getName();
 
 private:
     MainWindow &window;

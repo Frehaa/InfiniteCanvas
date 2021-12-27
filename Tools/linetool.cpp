@@ -31,9 +31,3 @@ void LineTool::mousePressEvent(QPoint point)
     path->addPoint(point);
     window.addDrawable(path);
 }
-
-QString LineTool::getName()
-{
-   return QString("Line");
-}
-

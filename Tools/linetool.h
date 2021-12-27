@@ -25,11 +25,10 @@
 class LineTool : public Tool
 {
 public:
-    LineTool(MainWindow &w) : window(w){}
+    LineTool(MainWindow &w) : Tool("Line"), window(w){}
     void mouseMoveEvent(QPoint);
     void mousePressEvent(QPoint);
     void mouseReleaseEvent(QPoint) {}
-    QString getName();
 
 private:
     MainWindow& window;

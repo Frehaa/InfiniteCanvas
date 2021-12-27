@@ -32,6 +32,8 @@
 #include "colorbackground.h"
 #include "Tools/pentool.h"
 
+#include <memory>
+
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
@@ -43,18 +45,16 @@ MainWindow::MainWindow(QWidget *parent)
     // this->background = new RuleLines(this);
     this->transform = QTransform();
     // this->activeTool = new PenTool(this);
-    this->activeTool = new CircleTool(*this);
+    this->activeTool = std::shared_ptr<Tool>(new CircleTool(*this));
     this->zoomLevel = 5;
 }
 
-void MainWindow::addDrawable(Drawable *drawable)
-{
+void MainWindow::addDrawable(Drawable *drawable) {
     this->drawables.append(drawable);
     this->repaint();
 }
 
-void MainWindow::setActiveTool(Tool *tool)
-{
+void MainWindow::setActiveTool(std::shared_ptr<Tool> tool) {
     this->activeTool = tool;
 }
 
@@ -149,15 +149,4 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
 void MainWindow::keyReleaseEvent(QKeyEvent*)
 {
     // qDebug() << "Key: " << event->key() << " - isAutoRepeat: " << event->isAutoRepeat();
-}
-
-void MainWindow::on_actionSave_triggered()
-{
-    qDebug() << "Save";
-}
-
-
-void MainWindow::on_actionOpen_triggered()
-{
-    qDebug() << "Open";
 }

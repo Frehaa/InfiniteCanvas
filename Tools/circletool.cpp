@@ -23,8 +23,3 @@ void CircleTool::mousePressEvent(QPoint position)
 {
     window.addDrawable(new Circle(position, 30));
 }
-
-QString CircleTool::getName()
-{
-    return QString("Circle");
-}

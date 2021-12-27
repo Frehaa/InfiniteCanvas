@@ -37,7 +37,7 @@ class MainWindow : public QMainWindow
 public:
     MainWindow(QWidget *parent = nullptr);
     void addDrawable(Drawable*);
-    void setActiveTool(Tool*);
+    void setActiveTool(std::shared_ptr<Tool>);
     ~MainWindow();
 
 protected:
@@ -50,13 +50,6 @@ protected:
     void keyPressEvent(QKeyEvent*);
     void keyReleaseEvent(QKeyEvent*);
 
-private slots:
-    void on_actionSave_triggered();
-
-    void on_actionOpen_triggered();
-
-    void on_actionOpen_triggered(bool checked);
-
 private:
     Ui::MainWindow *ui;
     Drawable* background;
@@ -64,7 +57,7 @@ private:
     QTransform transform;
     QPoint lastMousePosition;
     QPen currentPen;
-    Tool* activeTool;
+    std::shared_ptr<Tool> activeTool;
     int zoomLevel;
 };
 #endif // MAINWINDOW_H
